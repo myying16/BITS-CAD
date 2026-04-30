@@ -30,11 +30,10 @@ class EncoderMambaBiBlock(nn.Module):
             x_snd = x_snd * padding_mask
         h = self.norm(x_snd)
 
-        h_bld = _make_batch_first(h)         # (S,B,D)-(B,S,D)
-        #print("tt",text.shape) #([128, 512, 256])
-
-        y_bld = self.mamba(h_bld,text,text_mask=text_mask)           # (B,S,D)
-        y_snd = _make_seq_first(y_bld)           # (S,B,D)
+        h_bld = _make_batch_first(h)        
+        
+        y_bld = self.mamba(h_bld,text,text_mask=text_mask)           
+        y_snd = _make_seq_first(y_bld)        
 
         x_snd = x_snd + self.drop(y_snd)
         if padding_mask is not None:
