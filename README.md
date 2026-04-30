@@ -12,6 +12,12 @@ pip install -r requirements.txt
 pip install causal-conv1d
 pip install mamba-ssm
 ```
+Install [pythonocc](https://github.com/tpaviot/pythonocc-core) (OpenCASCADE) by conda:
+
+```bash
+$ conda install -c conda-forge pythonocc-core
+```
+
 ## Dataset
 
 please refer to the code from [here](https://github.com/lllssc/Drawing2CAD) and extract them under `data` folder.
