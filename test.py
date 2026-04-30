@@ -26,19 +26,19 @@ def main():
     for i, data in enumerate(test_loader):
         cad_data = data['cad']
         gt_vec = torch.cat([cad_data['command'].unsqueeze(-1), cad_data['args']], dim=-1).squeeze(1).detach().cpu().numpy()
-        cad_commands_ = gt_vec[:, :, 0]   #(256, 60)
+        cad_commands_ = gt_vec[:, :, 0]   
         batch_size = cad_data['command'].shape[0]
 
-        # 前向推理（模型预测）
+       
         with torch.no_grad():
             outputs, _ = tr_agent.forward(data)
             batch_outputs = tr_agent.logits2vec(outputs)
 
         pbar = tqdm(total=batch_size, desc='BATCH[{}]'.format(i))
 
-        for j in range(batch_size):  #256
+        for j in range(batch_size):  
             out = batch_outputs[j]
-            seq_len = cad_commands_[j].tolist().index(CAD_EOS_IDX)  ## 根据GT中出现的CAD_EOS_IDX 判定序列长度
+            seq_len = cad_commands_[j].tolist().index(CAD_EOS_IDX)  
 
             data_id = data['id'][j].split('/')[-1]
         
