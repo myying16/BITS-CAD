@@ -9,9 +9,8 @@ from trimesh.sample import sample_surface
 import argparse
 import sys
 sys.path.append("..")
-from cadlib.extrude import CADSequence  #用于解析 JSON 中的 CAD 命令序列
-#create_CAD：根据命令序列生成一个 三维 CAD 实体模型。
-# CADsolid2pc 将CAD实体表面进行点云采样（生成 N 个点的 xyz 坐标）。
+from cadlib.extrude import CADSequence  
+
 from cadlib.visualize import CADsolid2pc, create_CAD
 from utils.pc_utils import write_ply, read_ply
 
@@ -19,8 +18,7 @@ DATA_ROOT = "../data"
 RAW_DATA = os.path.join(DATA_ROOT, "cad_json")
 RECORD_FILE = os.path.join(DATA_ROOT, "train_val_test_split.json")
 
-#每个生成的点云包含 8096 个点
-N_POINTS = 8096 # 4096
+N_POINTS = 8096 
 WRITE_NORMAL = False
 SAVE_DIR = os.path.join(DATA_ROOT, "pc_cad")
 if not os.path.exists(SAVE_DIR):
@@ -44,7 +42,7 @@ def process_one(data_id):
     with open(json_path, "r") as fp:
         data = json.load(fp)
 
-    # 解析JSON → 构造CAD实体
+
     try:
         cad_seq = CADSequence.from_dict(data)
         cad_seq.normalize()
@@ -53,10 +51,7 @@ def process_one(data_id):
         print("create_CAD failed:", data_id)
         return None
 
-    '''CAD 实体 → 点云采样
-    作用：对CAD模型表面进行均匀采样，生成N个点（8096个点）。
-    输出为一个numpy数组，形状大约为(8096, 3)（包含每个点的[x, y, z]坐标）。
-    若模型生成失败或为空，则报错并返回None'''
+   
     try:
         out_pc = CADsolid2pc(shape, N_POINTS, data_id.split("/")[-1])
     except Exception as e:
@@ -77,8 +72,7 @@ with open(RECORD_FILE, "r") as fp:
 # process_one(all_data["train"][3])
 # exit()
 
-#python generate_pc.py → 转换 train + val + test 集
-#python generate_pc.py --only_test → 只转换 test 集
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--only_test', action="store_true", help="only convert test data")
 args = parser.parse_args()
