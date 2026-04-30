@@ -57,7 +57,7 @@ class Config(object):
 
         self.text_model="bert_large_uncased"
         self.text_max_len = 512
-        self.text_cache_dir = "/home/ubuntu/.cache/huggingface/hub/models--google-bert--bert-large-uncased/snapshots/6da4b6a26a1877e173fca3225479512db81a5e5b"
+        self.text_cache_dir = "your BERT dir"
         self.text_embed_dim = 1024
         self.adapt_dim = self.d_model
         self.use_text = True
@@ -87,13 +87,13 @@ class Config(object):
         parser.add_argument('-g', '--gpu_ids', type=str, default='0', help="gpu to use, e.g. 0  0,1,2. CPU not supported.")        
         
         parser.add_argument('--batch_size', type=int, default=256, help="batch size")
-        parser.add_argument('--num_workers', type=int, default=8, help="number of workers for data loading")  #用于并行加载数据的子进程数
+        parser.add_argument('--num_workers', type=int, default=8, help="number of workers for data loading") 
 
         parser.add_argument('--nr_epochs', type=int, default=100, help="total number of epochs to train")
         parser.add_argument('--lr', type=float, default=1e-3, help="initial learning rate")
         parser.add_argument('--grad_clip', type=float, default=1.0, help="initial learning rate")
         parser.add_argument('--warmup_step', type=int, default=2000, help="step size for learning rate warm up")
-        parser.add_argument('--continue', dest='cont',  action='store_true', help="continue training from checkpoint")  #False表示从头开始训练  --continue
+        parser.add_argument('--continue', dest='cont',  action='store_true', help="continue training from checkpoint") 
         parser.add_argument('--ckpt', type=str, default='latest', required=False, help="desired checkpoint to restore")
         parser.add_argument('--vis', action='store_true', default=False, help="visualize output in training")
         parser.add_argument('--save_frequency', type=int, default=50, help="save models every x epochs")
