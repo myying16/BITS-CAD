@@ -14,7 +14,7 @@ pip install mamba-ssm==1.1.1
 ```
 ## Dataset
 
-please refer to the code from [here](https://github.com/lllssc/Drawing2CAD/tree/main) and extract them under `data` folder.
+please refer to the code from [here](https://github.com/lllssc/Drawing2CAD) and extract them under `data` folder.
 
 
 ## Training
@@ -37,3 +37,13 @@ python test.py  --exp_name your_exp_name
 
 ## Evaluation
 After inference, the final results will be saved under `proj/your_exp_name/test_results`. To evaluate the model inference results and to export and visualize the final CAD models, please refer to the code from [DeepCAD](https://github.com/ChrisWu1997/DeepCAD).
+
+## Acknowledgement
+
+This repository builds upon the following awesome datasets and projects:
+
+- [DeepCAD](https://github.com/ChrisWu1997/DeepCAD)
+- [Drawing2CAD](https://github.com/lllssc/Drawing2CAD)
+- [Mamba](https://github.com/state-spaces/mamba)
+- [Vision Mamba](https://github.com/hustvl/Vim)
+
