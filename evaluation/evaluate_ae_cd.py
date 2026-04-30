@@ -17,10 +17,7 @@ PC_ROOT = "../data/pc_cad"
 # data that is unable to process
 SKIP_DATA = [""]
 
-'''每个生成点 p 在真实点云中找最近邻 q，计算距离平方；
-每个真实点 q 在生成点云中找最近邻 p；
-两部分求平均后相加。
-Chamfer Distance 越小，说明模型生成的 3D 形状越接近真实形状'''
+
 def chamfer_dist(gt_points, gen_points, offset=0, scale=1):
     gen_points = gen_points / scale - offset
 
@@ -36,9 +33,7 @@ def chamfer_dist(gt_points, gen_points, offset=0, scale=1):
 
     return gt_to_gen_chamfer + gen_to_gt_chamfer
 
-'''
-点云归一化
-当生成的点云坐标超出 [-1, 1] 范围时，将其缩放到单位立方体内，防止偏移或过大'''
+
 def normalize_pc(points):
     scale = np.max(np.abs(points))
     points = points / scale
@@ -50,21 +45,19 @@ def process_one(path):
         out_vec = fp["out_vec"][:].astype(np.float64)
         # gt_vec = fp["gt_vec"][:].astype(np.float)
 
-    #根据文件名找到对应的 Ground Truth 点云
     data_id = path.split('/')[-1].split('.')[0][:8]
     truck_id = data_id[:4]
     gt_pc_path = os.path.join(PC_ROOT, truck_id, data_id + '.ply')
     if not os.path.exists(gt_pc_path):
         return None
 
-    #从 out_vec 重建 CAD 几何体
+
     try:
         shape = vec2CADsolid(out_vec)
     except Exception as e:
         print("create_CAD failed", data_id)
         return None
 
-    #CAD 实体 → 点云采样
     try:
         out_pc = CADsolid2pc(shape, args.n_points, data_id)
     except Exception as e:
@@ -74,12 +67,10 @@ def process_one(path):
     if np.max(np.abs(out_pc)) > 2: # normalize out-of-bound data
         out_pc = normalize_pc(out_pc)
 
-    #读取 Ground Truth 点云
     gt_pc = read_ply(gt_pc_path)
     sample_idx = random.sample(list(range(gt_pc.shape[0])), args.n_points)
     gt_pc = gt_pc[sample_idx]
 
-    #计算 Chamfer Distance
     cd = chamfer_dist(gt_pc, out_pc)
     return cd
 
