@@ -7,12 +7,14 @@ class EncoderMambaBiBlock(nn.Module):
     def __init__(self, cfg):
         super().__init__()
         self.norm = nn.LayerNorm(cfg.d_model)
-        self.mamba = Mamba(
+        self.mamba = Mamba1(
             d_model=cfg.d_model,
+            #text_dim=cfg.d_model,
             d_state=16,
             d_conv=4,
             expand=2,
             bimamba=True,
+            use_fast_path=False,
         )
         self.drop = nn.Dropout(cfg.dropout)
         self.ffn_norm = nn.LayerNorm(cfg.d_model)
@@ -22,15 +24,17 @@ class EncoderMambaBiBlock(nn.Module):
             nn.Dropout(cfg.dropout),
             nn.Linear(4*cfg.d_model, cfg.d_model),
         )
-    def forward(self, x_snd, padding_mask=None):
-        # x_snd: (S,N,D)
+    def forward(self, x_snd,text, text_mask=None,padding_mask=None):
+        # x_snd: (S,B,D),text: 1,N,D-B,L,D
         if padding_mask is not None:
             x_snd = x_snd * padding_mask
         h = self.norm(x_snd)
 
-        h_bld = _make_batch_first(h)               # (N,S,D)
-        y_bld = self.mamba(h_bld)           # (N,S,D) 由 mamba_simple.forward 决定
-        y_snd = _make_seq_first(y_bld)           # (S,N,D)
+        h_bld = _make_batch_first(h)         # (S,B,D)-(B,S,D)
+        #print("tt",text.shape) #([128, 512, 256])
+
+        y_bld = self.mamba(h_bld,text,text_mask=text_mask)           # (B,S,D)
+        y_snd = _make_seq_first(y_bld)           # (S,B,D)
 
         x_snd = x_snd + self.drop(y_snd)
         if padding_mask is not None:
