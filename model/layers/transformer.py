@@ -12,9 +12,6 @@ from torch.nn.modules.normalization import LayerNorm
 from .attention import MultiheadAttention
 
 
-#Transformer,TransformerEncoder,TransformerDecoder，TransformerEncoderLayer，TransformerDecoderLayer
-
-
 class Transformer(Module):
     r"""A transformer model. User is able to modify the attributes as needed. The architecture
     is based on the paper "Attention Is All You Need". Ashish Vaswani, Noam Shazeer,
