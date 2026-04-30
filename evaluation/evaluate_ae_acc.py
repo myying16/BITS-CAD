@@ -8,16 +8,11 @@ sys.path.append("..")
 from config.macro import *
 
 
-
-# python evaluate_ae_acc.py --src /home/ubuntu/pycharm_project/Drawing2CAD-main/proj_log/train_exp_4x_1/test_results
-
-
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--src', type=str, default=None, required=True)
 args = parser.parse_args()
 
-TOLERANCE = 3  #参数的数值容忍范围
+TOLERANCE = 3  
 
 result_dir = args.src
 filenames = sorted(os.listdir(result_dir))
@@ -31,7 +26,7 @@ each_cmd_cnt = np.zeros((len(CAD_COMMANDS),))
 each_cmd_acc = np.zeros((len(CAD_COMMANDS),))
 
 # accuracy w.r.t each parameter
-args_mask = CAD_CMD_ARGS_MASK.astype(np.float64) #定义每个命令对应哪些参数是有效的
+args_mask = CAD_CMD_ARGS_MASK.astype(np.float64) 
 N_ARGS = args_mask.shape[1]
 each_param_cnt = np.zeros([*args_mask.shape])
 each_param_acc = np.zeros([*args_mask.shape])
@@ -41,8 +36,6 @@ for name in tqdm(filenames):
     with h5py.File(path, "r") as fp:
         out_vec = fp["out_vec"][:].astype(np.int64)
         gt_vec = fp["gt_vec"][:].astype(np.int64)
-    '''print("gt_vec", gt_vec.shape)
-    print("out_vec", out_vec.shape)'''
     out_cmd = out_vec[:, 0]
     gt_cmd = gt_vec[:, 0]
 
@@ -59,7 +52,7 @@ for name in tqdm(filenames):
             continue
 
 
-        #在命令预测正确的那些步上，对“有效参数”做容忍判定后的平均正确率
+       
         if out_cmd[j] == gt_cmd[j]: # NOTE: only account param acc for correct cmd
             tole_acc = (np.abs(out_param[j] - gt_param[j]) < TOLERANCE).astype(np.int64)
             # filter param that do not need tolerance (i.e. requires strictly equal)
@@ -74,15 +67,13 @@ for name in tqdm(filenames):
             each_param_cnt[cmd, np.arange(N_ARGS)] += 1
             each_param_acc[cmd, np.arange(N_ARGS)] += tole_acc
 
-        # ✅ 防止 param_acc 为空
+       
     if len(param_acc) > 0:
         param_acc = np.mean(param_acc)
     else:
         param_acc = 0.0
     avg_param_acc.append(param_acc)
 
-    ''' param_acc = np.mean(param_acc)
-    avg_param_acc.append(param_acc)'''
     cmd_acc = np.mean(cmd_acc)
     avg_cmd_acc.append(cmd_acc)
 
