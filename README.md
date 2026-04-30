@@ -36,7 +36,19 @@ python test.py  --exp_name your_exp_name
 ```
 
 ## Evaluation
-After inference, the final results will be saved under `proj/your_exp_name/test_results`. To evaluate the model inference results and to export and visualize the final CAD models, please refer to the code from [DeepCAD](https://github.com/ChrisWu1997/DeepCAD).
+After inference, the final results will be saved under `proj/your_exp_name/test_results`. 
+
+ To evaluate the results:
+
+  ```bash
+  $ cd evaluation
+  # for command accuray and parameter accuracy
+  $ python evaluate_ae_acc.py --src ../proj_log/your_exp_name/test_results
+  # for chamfer distance and invalid ratio
+  $ python evaluate_ae_cd.py --src ../proj_log/your_exp_name/test_results --parallel
+  ```
+
+To export and visualize the final CAD models, please refer to the code from [DeepCAD](https://github.com/ChrisWu1997/DeepCAD).
 
 ## Acknowledgement
 
