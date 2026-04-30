@@ -17,19 +17,16 @@ def get_dataloader(phase, config, shuffle=None):
 class BiSequenceDataset(Dataset):
     def __init__(self, phase, config):
         super(BiSequenceDataset, self).__init__()
-        #self.svg_vec = os.path.join(config.data_root, "svg_vec")
-        #self.cad_vec = os.path.join(config.data_root, "cad_vec")
-        self.svg_vec = os.path.join("/home/ubuntu/pycharm_project/Drawing2CAD-main/data/svg_vec")
-        self.cad_vec = os.path.join("/home/ubuntu/pycharm_project/Drawing2CAD-main/data/cad_vec")
+        self.svg_vec = os.path.join(config.data_root, "svg_vec")
+        self.cad_vec = os.path.join(config.data_root, "cad_vec")
         self.path = os.path.join(config.data_root, "train_val_test_split.json")
         with open(self.path, "r") as fp:
             all_data = json.load(fp)[phase]
         self.svg_max_total_len = SVG_MAX_TOTAL_LEN #100
         self.cad_max_total_len = CAD_MAX_TOTAL_LEN #60
 
-        #self.text_csv_path = os.path.join(config.data_root, "text2cad.csv")
-        self.text_csv_path = os.path.join("/home/ubuntu/pycharm_project/Drawing2CAD-main/data/text2cad.csv")
-        self.text_dict = {}  # id -> text
+        self.text_csv_path = os.path.join(config.data_root, "text2cad.csv")
+        self.text_dict = {}  
         with open(self.text_csv_path, "r") as f:
             reader = csv.DictReader(f)
             for row in reader:
