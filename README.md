@@ -9,8 +9,8 @@ Install python package dependencies through pip:
 ```bash
 pip install -r requirements.txt
 # Mamba install
-pip install causal-conv1d==1.1.1
-pip install mamba-ssm==1.1.1
+pip install causal-conv1d
+pip install mamba-ssm
 ```
 ## Dataset
 
