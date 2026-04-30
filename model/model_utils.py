@@ -19,8 +19,7 @@ def _make_batch_first(*args):
         return arg.permute(1, 0, *range(2, arg.dim())) if arg is not None else None
     return (*(arg.permute(1, 0, *range(2, arg.dim())) if arg is not None else None for arg in args),)
 
-#哪些 token 是 padding
-#给 Transformer Attention 用的 True(padding)/False mask
+
 def _get_key_padding_mask_cad(commands, seq_dim=0):
     """
     Args:
@@ -47,7 +46,7 @@ def _get_key_padding_mask_svg(commands, seq_dim=0):
         return key_padding_mask
 
 
-#给“数值计算/聚合/乘法”用的 0(padding token)/1 mask
+
 def _get_padding_mask_cad(commands, seq_dim=0, extended=False):
     with torch.no_grad():
         padding_mask = (commands == CAD_EOS_IDX).cumsum(dim=seq_dim) == 0
