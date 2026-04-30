@@ -2,7 +2,7 @@ import os
 import json
 import shutil
 
-# 将命令行参数或配置对象保存为JSON文件
+
 def save_args(args, save_dir):
     param_path = os.path.join(save_dir, 'params.json')
 
