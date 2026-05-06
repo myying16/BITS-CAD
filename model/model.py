@@ -45,9 +45,10 @@ class TextEmbedding(nn.Module):
         }
         text_embedding, _ = self.adaptive_layer(text_embed, mask_prompt_dict)
         valid_mask = (~text_mask).float().unsqueeze(-1)
-        text_global = (text_embedding * valid_mask).sum(dim=1) / valid_mask.sum(dim=1)
-        text_embedding = text_global.unsqueeze(0).expand(1, -1, -1)
-        return text_embedding
+        denom = valid_mask.sum(dim=1).clamp_min(1.0) 
+        text_global = (text_embedding * valid_mask).sum(dim=1) /denom  
+        text_global = text_global.unsqueeze(0).expand(1, -1, -1)  
+        return text_embedding,text_global,text_mask
 
 
 
@@ -78,8 +79,8 @@ class Encoder(nn.Module):
     def forward(self, command, args):
         padding_mask, key_padding_mask = _get_padding_mask_svg(command, seq_dim=0), _get_key_padding_mask_svg(command,                                                                                                      seq_dim=0)
         src = self.embedding(command, args)   # (S, N, 256)
-        for blk in self.blocks:
-            src = blk(src, padding_mask=padding_mask)
+         for blk in self.blocks:
+            src = blk(src, text,text_mask=text_mask,padding_mask=padding_mask)
         memory = self.encoder_norm(src)
         z = (memory * padding_mask).sum(dim=0, keepdim=True) / padding_mask.sum(dim=0, keepdim=True)
         return z
@@ -208,11 +209,11 @@ class SVG2CADTransformer(nn.Module):
         self.args_decoder = ArgsDecoder(cfg)
     def forward(self, texts_enc,  commands_enc, args_enc):
         commands_enc_, args_enc_= _make_seq_first( commands_enc,args_enc)  #N, S, ... -> S, N, ...
-
-        z = self.encoder( commands_enc_, args_enc_)
-        text_embedding = self.text_embedding(texts_enc)
-        z = self.feature( z,text_embedding)
-        z = self.bottleneck(z)      #1, 256, 256
+        
+        text_embedding,text_global,text_mask = self.text_embedding(texts_enc)  # (L,B,D)
+        z = self.encoder(commands_enc_, args_enc_,text_embedding,text_mask)  # (1,B=N,D)
+        z = self.bottleneck(z)  # 1, 256, 256
+        z = self.feature( z,text_global)
 
         """command-guided generation"""
         command_logits, guidance = self.command_decoder(z)
